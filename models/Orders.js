@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const itemSchema =  new mongoose.Schema({
     itemCode:{
         type: mongoose.SchemaTypes.ObjectId,
-        ref:"menus",
+        ref:'Menus',
         required: true
     },
     quantity:{
@@ -31,4 +31,4 @@ const ordersSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('orders', ordersSchema);
+module.exports = mongoose.model('Orders', ordersSchema);

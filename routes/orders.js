@@ -2,35 +2,17 @@ const router = require('express').Router();
 const ordersModel = require('../models/Orders');
 const axios = require('axios');
 const mongoose = require('mongoose');
+const menuModel = require('../models/Menus');
 
 const toMongoId = mongoose.Types.ObjectId;
 
 
 router.get("/", async (req,res)=>{
 
-    let currency = req.query.currency;
 
     try{
-        let orders = await ordersModel.find({}).populate({
-            path: 'menus',
-            strictPopulate: false
-          })
-        
-        if(typeof currency !== 'undefined'){
-            const url = 'https://api.apilayer.com/fixer/latest?symbols='+currency.toString()+'&base=EUR'
+        const orders = await ordersModel.find().sort({date: -1}).populate('itemlist.itemCode')
 
-            const currencyConvert = await axios.get(url,{
-                headers: {
-                    apikey: process.env.APILAYER.toString()
-                }
-            });
-
-            orders = orders.map(obj => (
-                obj.itemlist.map(item=>(
-                    {...item, [`price${currency}`]: item.price * currencyConvert.data.rates[currency.toString()]}        
-                ))
-            ))
-        }
         res.status(200).send(orders);
     }catch(err){
         console.log(err)
@@ -102,13 +84,6 @@ module.exports = router;
  *     description: An Array of all Orders
  *     tags:
  *       - Orders
- *     parameters:
- *       - in: query
- *         name: currency
- *         required: false
- *         schema:
- *           type: string
- *         description: Desired currency (Optional)
  *     responses:
  *       200:
  *         description: A list of Orders.

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>
+<script src=
+"https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js">
+</script>
+</head>
+<body>
+
+<h2>Incoming orders</h2>
+
+<table id="orders">
+    <tbody>
+        <tr>
+            <th>Order Id</th>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Total Amount</th>
+            <th>Date</th>
+        </tr>
+    </tbody>
+</table>
+<br>
+<h3>Click on the order to display further information</h3>
+<br>
+<br>
+<h3 id="title"></h3>
+<br>
+<table id="info">
+    <tbody id="infoBody">
+    </tbody>
+</table>
+</body>
+</html>
+
+<script>
+    
+    document.body.onload = function(){
+        function fillSecond(item){
+            console.log(item)
+            if(typeof item !== undefined){
+                document.getElementById('title').innerHTML='Information for Order: '+item._id
+                let food = document.getElementById("info"); 
+                $("#info tr").remove(); 
+                let row = food.insertRow(-1);
+                let cell1 = row.insertCell(0);
+                let cell2 = row.insertCell(1);
+                let cell3 = row.insertCell(2);
+                let cell4 = row.insertCell(3);
+                let cell5 = row.insertCell(4);
+                cell1.innerHTML = "Item Id";
+                cell2.innerHTML = "Item Name"; 
+                cell3.innerHTML = "Price";
+                cell4.innerHTML = "Category"; 
+                cell5.innerHTML = "Quantity";
+                item.itemlist.map((x)=>{
+                    row = food.insertRow(-1);
+                    cell1 = row.insertCell(0);
+                    cell2 = row.insertCell(1);
+                    cell3 = row.insertCell(2);
+                    cell4 = row.insertCell(3);
+                    cell5 = row.insertCell(4);
+                    cell1.innerHTML = x.itemCode._id;
+                    cell2.innerHTML = x.itemCode.item; 
+                    cell3.innerHTML = x.itemCode.price;
+                    cell4.innerHTML = x.itemCode.category; 
+                    cell5.innerHTML = x.quantity;
+                })
+            }
+        }
+        async function logJSONData() {
+            const response = await fetch("http://localhost:9000/api/orders/");
+            const jsonData = await response.json();
+            console.log(jsonData);
+            let ordersTable = document.getElementById("orders");
+            jsonData.map((item, key)=>{
+                let row = ordersTable.insertRow(-1);
+                row.addEventListener('click', ()=>{fillSecond(item)});
+                let cell1 = row.insertCell(0);
+                let cell2 = row.insertCell(1);
+                let cell3 = row.insertCell(2);
+                let cell4 = row.insertCell(3);
+                let cell5 = row.insertCell(4);
+                let total = 0
+                item.itemlist.map((x)=>{
+                    total+= x.itemCode.price * x.quantity;
+                })
+                cell1.innerHTML = item._id;
+                cell2.innerHTML = item.name; 
+                cell3.innerHTML = item.address;
+                cell4.innerHTML = total; 
+                cell5.innerHTML = item.date;
+            })
+        }
+        logJSONData()
+    }; 
+</script> 
+

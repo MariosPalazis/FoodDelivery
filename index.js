@@ -1,4 +1,5 @@
 const express = require('express');
+const router = express.Router();
 const app = express();
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
@@ -9,6 +10,7 @@ const menuRoute = require('./routes/menus');
 const ordersRoute = require('./routes/orders');
 //Import Model
 const menuModel = require('./models/Menus');
+const path = require('path');
 
 dotenv.config();
 app.use(express.json());
@@ -108,4 +110,9 @@ app.use(express.static('public'));
 
 app.listen( 9000, '0.0.0.0' , ()=>{
   console.log('Server running on localhost:9000!');
+});
+
+
+app.get('/',function(req,res) {
+  res.sendFile(path.join(__dirname+'/public/ui/index.html'));
 });
